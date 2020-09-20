@@ -1,6 +1,6 @@
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Button, ImageBackground, TextInput, Image} from 'react-native';
+import { StyleSheet, Text, View, Button, ImageBackground, TextInput, Image, KeyboardAvoidingView,Keyboard  } from 'react-native';
 import { Dimensions } from "react-native";
 import { AsyncStorage } from 'react-native';
 import { getUser, isLoged, LogOut, SingIn, SingUp } from '../../utilities/FirebaseAuth';
@@ -11,7 +11,7 @@ import * as Crypto from 'expo-crypto';
 var width = Dimensions.get('window').width;
 var height = Dimensions.get('window').height;
 
-export default class LoginScreen extends Component<any>{
+export default class LoginScreen extends Component{
    
     state = {
         email: '',
@@ -94,6 +94,9 @@ export default class LoginScreen extends Component<any>{
                     <Text style={{fontSize:24, fontFamily:'font1', color:'#CFCFCF'}}>Empezá a generar ganancias</Text>
                     
                 </View>
+                <KeyboardAvoidingView
+                    behavior={Platform.OS == "ios" ? "padding" : "height"}
+                >
                 {(!this.state.login)?
                     
                     <View style={{marginBottom:15}}>
@@ -102,6 +105,7 @@ export default class LoginScreen extends Component<any>{
                     onChangeText={text => this.setState({nombre: text})}
                     value={this.state.nombre}
                     placeholder="Nombre "
+                    onPress={Keyboard.dismiss}
                     />
                     </View>
                     :null}
@@ -123,6 +127,7 @@ export default class LoginScreen extends Component<any>{
                     style={{ height: 45,width:width-30,marginLeft:15, paddingLeft:55,borderRadius:5, borderColor: 'gray', borderWidth: 1 }}
                     onChangeText={text => this.setState({password: text})}
                     value={this.state.password}
+                    secureTextEntry={true}
                     placeholder="Contraseña"
                     />
                 </View>
@@ -152,6 +157,7 @@ export default class LoginScreen extends Component<any>{
                         <Text style={{ fontFamily:'font3', fontSize:22, color:"#FF653F"}}>¿Olvidaste tu cuenta?</Text>
                     </TouchableOpacity>
                 </View>
+                </KeyboardAvoidingView>
             </View>
         );
     }

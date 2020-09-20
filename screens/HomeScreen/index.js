@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, ImageBackground, Image} from 'react-native';
+import { StyleSheet, Text, View, ImageBackground, Image,KeyboardAvoidingView , Keyboard} from 'react-native';
 import { Dimensions } from "react-native";
 // import { apiSand, url } from '../../../Toto/RNWallet/utilities/dataString';
 import { ScrollView, TextInput, TouchableOpacity } from 'react-native-gesture-handler';
@@ -9,6 +9,7 @@ import * as firebase from 'firebase';
 import 'babel-polyfill';
 import { aMoneda, opcionesPesos } from '../../utilities/Currency';
 import * as Crypto from 'expo-crypto';
+import { LinearGradient } from 'expo-linear-gradient';
 
 
 
@@ -26,7 +27,7 @@ export default class HomeScreen extends Component{
         balance: '0',
         TokenWallet:"",
         name:"",
-        isHistory:true,
+        isHistory:1,
         destinario:'',
         montoDestinitario:0
     }
@@ -50,8 +51,6 @@ export default class HomeScreen extends Component{
             this.Blockchain = new BlockChain(x.chain, x.difficulty, x.miningReward, x.value);
             this.setState({balance: Number(this.Blockchain.getBalanceOfAddress(this.state.TokenWallet))})
         });
-        
-
     }
 
     CerrarSesion(){
@@ -119,7 +118,7 @@ export default class HomeScreen extends Component{
                         <Text style={{fontSize:42, color:'white'}}>$</Text>
                         </View>
                         <View style={{flex:0.6, paddingLeft:15, paddingTop:15, paddingBottom:15, justifyContent:'center'}}>
-                        <Text style={{color:'white', fontSize:16}}>Compra de brotex</Text>
+                    <Text style={{color:'white', fontSize:16}}>Envio de brotex</Text>
                         <Text style={{color:'#AEAEAE', fontSize:14}}>Ayer a las 10AM</Text>
                         </View>
                         <View style={{flex:0.4, paddingRight:20, justifyContent:'center'}}>
@@ -152,6 +151,8 @@ export default class HomeScreen extends Component{
 
     sendBrotex = () => {
             return (
+        <KeyboardAvoidingView behavior={'padding'} style={{flex:1}} keyboardVerticalOffset={30}> 
+
                 <View style={{justifyContent:'center', alignItems:'center',marginBottom:15}}>
                     <Text style={{fontFamily:'font4', fontSize:16, color:'white', textAlign:'center', marginTop:15}}>Envia Brotex de manera sencilla</Text>
                     <View style={{marginBottom:15, marginTop:30}}>
@@ -181,11 +182,11 @@ export default class HomeScreen extends Component{
                         <Text style={{fontFamily:'font4', fontSize:20, color:'white'}}>Enviar Brotexs</Text>
                     </TouchableOpacity>
                 </View>
+                </KeyboardAvoidingView>
             )
     }
 
     render() {
-       
         
         
         
@@ -195,13 +196,10 @@ export default class HomeScreen extends Component{
         return (
             <View style={styles.firstContainer}>
                 
-                <TouchableOpacity style={{position:'absolute', elevation: 9, top:30, right:43, width:400,height:400, backgroundColor:'yellow'}} 
-                >
-                            <Image source={require('../../assets/account.png')} style={{height:40, width:40}} />
-                        </TouchableOpacity>
-                <View style={{  height:height/1.5, position:'relative'}}>
+            
+                <View style={{  flex:0.65, position:'relative', flexDirection:'column'}}>
                 
-                    <ImageBackground style={{width:width, height:height/1.5, flexDirection:'column' }}
+                    <ImageBackground style={{width:width, flex:1, flexDirection:'column' }}
                      source={require("../../assets/bg.png")}>
                          <View style={{flexDirection:'row'}}>
                         <View style={{flex:0.33, marginTop:45}}>
@@ -219,57 +217,93 @@ export default class HomeScreen extends Component{
                             </TouchableOpacity>
                         </View>
                         </View>
-                        <View style={{ marginLeft:15, marginTop:30}}>
-                            <Text style={{fontFamily:'font2', fontSize:20, color:'white'}}>Bienvenido {this.state.name}!</Text>
-                            <Text style={{fontFamily:'font1', fontSize:18, color:'#DFDFDF', position:'relative', top:-5}}>Esta es tu billetera</Text>
+                        <View style={{  marginTop:30, justifyContent:"center", alignItems:'center'}}>
+                            <Text style={{fontFamily:'font2', fontSize:20, color:'white', textAlign:'center'}}>Bienvenido {this.state.name}!</Text>
+                            <Text style={{fontFamily:'font1', fontSize:18, color:'#DFDFDF', textAlign:'center', position:'relative', top:-5}}>Esta es tu billetera</Text>
                         </View>
-                        <View style={{marginLeft:0, marginTop:10}}>
-                            <ImageBackground style={{width:300, height:170, shadowColor: "#000",
-                            flexDirection:'column', padding:15, }}
-                            source={require("../../assets/card.png")}>
-                                <Text style={{color:'white', flex:0.4,marginLeft:25,marginTop:15, fontSize:20}}>Brotex</Text>
-                                <Text style={{color:'white', flex:0.3,marginLeft:25, fontSize:36, justifyContent:"flex-end"}}>{aMoneda(this.state.balance * Number(this.Blockchain.value), opcionesPesos
-                                )}</Text>
-                                <Text style={{color:'#929292', flex:0.3, marginLeft:27, marginTop:3,justifyContent:"flex-start"}}>Tenés {this.state.balance} Brotexs</Text>
+                        <View style={{marginLeft:0, marginTop:30}}>
+                           
+                            <LinearGradient
+                            style={{width:width-40, marginLeft:20,height:170, shadowColor: "#000",
+                            flexDirection:'column', padding:15, borderRadius:15,
+                            shadowColor: "#000",
+                            shadowOffset: {
+                                width: 0,
+                                height: 8,
+                            },
+                            shadowOpacity: 0.44,
+                            shadowRadius: 10.32,
+                            
+                            elevation: 16,}}
+                            colors={['#0c0c0c', '#171717', '#151515']}> 
+                            <LinearGradient style={{position:'absolute', right:30,top:43, height:94, width:94,transform: [{ rotate: "45deg" }]}}
+                                colors={['black', '#b7650091', '#4c2a00e0']}
+                                start={[0,0.33]}/>            
+                                <LinearGradient style={{position:'absolute', right:32.1,top:40, height:90, width:90,transform: [{ rotate: "45deg" }],
+                                borderTopLeftRadius:3, justifyContent:'center', alignItems:"center"}}
+                                colors={['#2d2d2d', '#0c0c0c', '#0c0c0c']}
+                                start={[0.3,0]}>
+                                    <Text style={{fontFamily:'font4', transform: [{ rotate: "-45deg" }], color:'#f5f5f5db', fontSize:50 }}>B</Text>
+                                </LinearGradient>
+                                <Text style={{color:'white', flex:0.4, fontSize:20, fontFamily:'font4'}}>Brotex Card</Text>
+                                <View style={{flex:0.6, justifyContent:'flex-end', alignItems:'flex-start'}}>
+                                    <Text style={{color:'white',  fontSize:36,
+                                    justifyContent:"flex-end"}}>
+                                        {aMoneda(this.state.balance * Number(this.Blockchain.value), opcionesPesos
+                                    )}</Text>
+                                    <Text style={{color:'#929292',justifyContent:"flex-start",
+                                    fontSize:16, fontFamily:'font1'}}>
+                                        Tenés 
+                                        <Text style={{fontFamily:'font2',color:'#3483fa'}}> {this.state.balance}</Text> Brotexs
+                                    </Text>
+                                 </View>
+                            </LinearGradient>
+                                <View style={{position:'absolute',bottom:-44, backgroundColor:'#ffffffb3', width:width-80, left:40,
+                                padding:15, borderBottomLeftRadius:10, borderBottomRightRadius:10}}>
+                                    <View style={{flex:1, flexDirection:"row"}}>
 
-                            </ImageBackground>
+                                            <View style={{flex:1, justifyContent:'center', alignItems:'center', borderRightWidth:1,borderColor:"#17171717"}}>
+                                                <TouchableOpacity onPress={() => {this.methodExample()}}>
+                                                <Text style={{fontFamily:'font2', position:'relative', top:3}}>Ingresar Dinero</Text>
+                                                </TouchableOpacity>
+                                            </View>
+
+                                            <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+                                                <TouchableOpacity>
+                                                <Text style={{fontFamily:'font2', position:'relative', top:3}}>Retirar Dinero</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                    </View>
+                                </View>
                         </View>
-                        <View style={{flexDirection:'row', marginTop:30}}>
-                            <View style={{flex:0.5, justifyContent:'flex-start', alignItems:'flex-end', flexDirection:'row', }}> 
-                            <TouchableOpacity style={{flexDirection:'row', justifyContent:'center', alignItems:'center', marginLeft:34+15 }}
-                            onPress={() => { 
-                                this.methodExample();
-                            }}>
-                                <TouchableOpacity style={{backgroundColor:'white', height:55, width:55, borderRadius:50, opacity:0.23,}}>
-                                </TouchableOpacity>
-                                <Image source={require("../../assets/call_made-black-18dp.png")} style={{width:30, height:30, position:'absolute', left:12}}/>
-                                <Text style={{ marginLeft:10, width:80, fontFamily:'font1', color:'white', marginTop:2}}>Ingresar Dinero</Text>
-                            </TouchableOpacity>
-                            </View>
-                            <View style={{flex:0.5, justifyContent:'flex-end', alignItems:'flex-end', flexDirection:'row', }}> 
-                            <TouchableOpacity style={{flexDirection:'row', justifyContent:'center', alignItems:'center', marginRight:15}}>
-                                <TouchableOpacity style={{backgroundColor:'white', height:55, width:55, borderRadius:50, opacity:0.23,}}>
-                                </TouchableOpacity>
-                                <Image source={require("../../assets/call_made-black-18dp.png")} style={{width:30, height:30, position:'absolute', left:12}}/>
-                                <Text style={{ marginLeft:10, width:80, fontFamily:'font1', color:'white', marginTop:2}}>Ingresar Dinero</Text>
-                            </TouchableOpacity>
-                            </View>
-                        </View>
-                        <View style={{position:"absolute", bottom:0,flexDirection:'row', flex:1, backgroundColor:'', width:width}}>
+                     
+                        <View style={{position:"absolute", bottom:0,flexDirection:'row', flex:1,elevation:18, backgroundColor:'', width:width}}>
                             <View style={{flex:0.5}}>
-                                <TouchableOpacity style={{flex:1, backgroundColor:"#ffffff6b", paddingLeft:30, paddingRight:30, height:45,
+                                <TouchableOpacity style={{flex:1, backgroundColor:"#d6d6d6", paddingLeft:30, paddingRight:30, height:45,
                             justifyContent:'center',alignItems:'center',borderTopColor:'#0F0F0F',
-                             borderTopWidth:(this.state.isHistory)?2:0}}
-                            onPress={() => { this.setState({isHistory:true}); }}>
-                                    <Text style={{fontFamily:'font3'}}>Ultimos movimientos</Text>
+                             borderTopWidth:2}}
+                            onPress={() => { this.setState({isHistory:1}); }}>
+                                    <Text style={{
+                                        fontFamily:(this.state.isHistory == 1)?'font2':'font3',
+                                        color:(this.state.isHistory == 1)?'black':'#424242', 
+                                    }}>
+                                    Ultimos movimientos
+                                    </Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={{flex:0.5}}>
-                                <TouchableOpacity style={{flex:1, backgroundColor:"#ffffff6b", paddingLeft:30, paddingRight:30,height:45,
-                            justifyContent:'center',alignItems:'center',borderTopColor:'#0F0F0F', 
-                            borderTopWidth:(!this.state.isHistory)?2:0}} 
-                            onPress={() => { this.setState({isHistory:false})}}>
-                                    <Text  style={{fontFamily:'font3'}}>Enviar dinero</Text>
+                                <TouchableOpacity style={{flex:1, backgroundColor:"#d6d6d6",
+                                paddingLeft:30, paddingRight:30,height:45,
+                                justifyContent:'center', alignItems:'center', borderTopColor:'#0F0F0F', 
+                                borderTopWidth:2}} 
+                                onPress={() => { this.setState({isHistory:2})}}>
+                                    <Text 
+                                    style={{
+                                        fontFamily:(this.state.isHistory == 2)?'font2':'font3',
+                                        color:(this.state.isHistory == 2)?'black':'#424242',                                        
+                                    }}>
+                                    Enviar dinero
+                                    </Text>
                                 </TouchableOpacity>
                             </View>
 
@@ -277,24 +311,23 @@ export default class HomeScreen extends Component{
                     </ImageBackground>
                 </View>
 
-                <View style={{  height:height/2.7,}}>
-                    
-                    <View style={{width:width, height:height/3, flex:1,
+                <View style={{  flex:0.35}}>
+                    <View style={{width:width, flex:1,
                     alignItems:'center',
-                     backgroundColor:'#131313'}}>
-
+                    backgroundColor:'#131313'}}>
                          <ScrollView style={{padding:15,}}>
                             {
-                                (this.state.isHistory)?
+                                (this.state.isHistory == 1)?
                                 this.GetLastMovement():
                                 this.sendBrotex()
                             }
                             <View style={{ height:15}}/>
-                        </ScrollView>
 
+                        </ScrollView>
+                        <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={80}/>
                     </View>
                 </View>
-                
+
             </View>
         );
     }
