@@ -29,7 +29,7 @@ class BlockChain {
     async minePendingTransactions(miningRewardAddress, lastChain) {
         let block = new Block(Date.now(), this.pendingTransactions);
         await block.calculateHash();
-        console.log(lastChain)
+        // console.log(lastChain)
         block.previousHash = lastChain;
         block.mineBlock(this.difficulty)
         

@@ -10,6 +10,8 @@ import 'babel-polyfill';
 import { aMoneda, opcionesPesos } from '../../utilities/Currency';
 import * as Crypto from 'expo-crypto';
 import { LinearGradient } from 'expo-linear-gradient';
+import { GetUrlToPay } from '../../utilities/Mercadopago/GetReference';
+import { WebView } from 'react-native-webview';
 
 
 
@@ -29,12 +31,12 @@ export default class HomeScreen extends Component{
         name:"",
         isHistory:1,
         destinario:'',
-        montoDestinitario:0
+        montoDestinitario:0,
+        urlPay:null
     }
 
     componentDidUpdate(){
-        // if(this.Blockchain !== undefined)
-        // console.log(this.Blockchain.getBalanceOfAddress("Brotex"))
+       
     }
 
     async componentDidMount() {
@@ -60,9 +62,12 @@ export default class HomeScreen extends Component{
     }
 
     methodExample(){
-        this.Blockchain.createTransaction(new Transaction('Brotex', this.state.TokenWallet, 100))
-        this.Blockchain.minePendingTransactions(this.state.TokenWallet,
-             Object.keys(this.Blockchain.chain[0])[Object.keys(this.Blockchain.chain[0]).length-1]);
+        GetUrlToPay().then(e => {
+            this.setState({urlPay: e});
+        });
+        // this.Blockchain.createTransaction(new Transaction('Brotex', this.state.TokenWallet, 100))
+        // this.Blockchain.minePendingTransactions(this.state.TokenWallet,
+        //      Object.keys(this.Blockchain.chain[0])[Object.keys(this.Blockchain.chain[0]).length-1]);
 
     }
 
@@ -88,7 +93,6 @@ export default class HomeScreen extends Component{
         Object.values(this.Blockchain.chain[0]).map(e => {
             Object.values(e.transactions).map(trans => {
                                 
-                                console.log(trans)
                 if (trans.toAddress === this.state.TokenWallet) {
                     transactions.push(
                         <TouchableOpacity style={{flexDirection:'row',  marginBottom:15,
@@ -195,8 +199,7 @@ export default class HomeScreen extends Component{
         }
         return (
             <View style={styles.firstContainer}>
-                
-            
+               
                 <View style={{  flex:0.65, position:'relative', flexDirection:'column'}}>
                 
                     <ImageBackground style={{width:width, flex:1, flexDirection:'column' }}
@@ -327,7 +330,21 @@ export default class HomeScreen extends Component{
                         <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={80}/>
                     </View>
                 </View>
+                {(this.state.urlPay != null)?
+                <View style={{position:'absolute', width:width-40, marginLeft:20,marginTop:40,top:0,left:0, height:height-30, borderRadius:25,
+                shadowColor: "#000",
+                shadowOffset: {
+                    width: 0,
+                    height: 12,
+                },
+                shadowOpacity: 0.58,
+                shadowRadius: 16.00,
 
+                elevation: 24,}}>    
+                    <WebView source={{ uri: this.state.urlPay }} style={{ height:height }} />
+                </View>
+                :null}
+            
             </View>
         );
     }

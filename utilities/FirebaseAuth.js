@@ -54,7 +54,7 @@ export function LogOut() {
 };
 
 export function isLoged(){
-    console.log(firebase.auth().currentUser)
+    // console.log(firebase.auth().currentUser)
     return firebase.auth().currentUser;
 }
 
@@ -69,7 +69,7 @@ export function VerifiyAuth(props) {
 }
 
 export async function getUser(email){
-    console.log(email);
+    // console.log(email);
     return new Promise(async resolve => {
         firebase.database().ref('wallet/' + email).on('value', (snapshot) => {
             resolve(snapshot.val().name);
