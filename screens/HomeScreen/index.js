@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, ImageBackground, Image,KeyboardAvoidingView , Keyboard} from 'react-native';
+import { StyleSheet, Text, View, ImageBackground, Image,KeyboardAvoidingView , Keyboard, Modal, Button} from 'react-native';
 import { Dimensions } from "react-native";
 // import { apiSand, url } from '../../../Toto/RNWallet/utilities/dataString';
 import { ScrollView, TextInput, TouchableOpacity } from 'react-native-gesture-handler';
@@ -32,7 +32,10 @@ export default class HomeScreen extends Component{
         isHistory:1,
         destinario:'',
         montoDestinitario:0,
-        urlPay:null
+        urlPay:null,
+        sizeScreen:1,
+        modalVisible:false,
+        mountToBuyBrotex:0,
     }
 
     componentDidUpdate(){
@@ -40,6 +43,11 @@ export default class HomeScreen extends Component{
     }
 
     async componentDidMount() {
+        if(height < 650){
+            this.setState({sizeScreen:2});
+        }else{
+            this.setState({sizeScreen:1});
+        }
         const value = await AsyncStorage.getItem('TokenWallet');
         const name = await AsyncStorage.getItem('Name');
         this.setState({TokenWallet:value, name:name})
@@ -47,6 +55,8 @@ export default class HomeScreen extends Component{
             this.props.navigation.navigate("Login");
         }
         
+        
+
         /**! GET DATA BLOCKCHAIN !**/
         await firebase.database().ref('Blockchain').on('value', (snapshot) => {
             const x = snapshot.val();
@@ -61,17 +71,23 @@ export default class HomeScreen extends Component{
         });
     }
 
-    methodExample(){
-        GetUrlToPay().then(e => {
+    openModal(){
+        this.setState({modalVisible:true});
+        
+    }
+
+    buyBrotex(monto){
+        this.setState({modalVisible:false})
+        GetUrlToPay(monto).then(e => {
+            alert(e);
             this.setState({urlPay: e});
         });
         // this.Blockchain.createTransaction(new Transaction('Brotex', this.state.TokenWallet, 100))
         // this.Blockchain.minePendingTransactions(this.state.TokenWallet,
         //      Object.keys(this.Blockchain.chain[0])[Object.keys(this.Blockchain.chain[0]).length-1]);
-
     }
 
-    async sendRequestBrotex() {
+    async sendRequestBrotex(mountPesos) {
         const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
        
         if(!re.test(this.state.destinario)){
@@ -140,12 +156,13 @@ export default class HomeScreen extends Component{
             });
             if(transactions.length === 0){
                 return (
-                    <View style={{justifyContent:'center', alignItems:'center', marginTop:30}}>
-                        <Text style={{fontFamily:'font3', fontSize:16, color:'white', textAlign:'center', marginTop:15}}>¡Todavía no hiciste ningun movimiento!</Text>
-                        <Text style={{fontFamily:'font4', fontSize:16, color:'white', textAlign:'center', marginTop:15}}>Compra Brotex y empeza a ahorrar</Text>
-                        <TouchableOpacity style={{backgroundColor:'#ff5a5f', padding:20, paddingLeft:30, paddingRight:30,
-                    borderRadius:15, marginTop:30}}>
-                            <Text style={{fontFamily:'font4', fontSize:20, color:'white'}}>Comprar Brotex</Text>
+                    <View style={{justifyContent:'center', alignItems:'center', marginTop:0}}>
+                        <Text style={{fontFamily:'font3', fontSize:13, color:'white', textAlign:'center', marginTop:15}}>¡Todavía no hiciste ningun movimiento!</Text>
+                        <Text style={{fontFamily:'font4', fontSize:13, color:'white', textAlign:'center', marginTop:15}}>Compra Brotex y empeza a ahorrar</Text>
+                        <TouchableOpacity style={{backgroundColor:'#ff5a5f',
+                        padding:20/this.state.sizeScreen+5, paddingLeft:30, paddingRight:30,
+                        borderRadius:15, marginTop:20}}>
+                            <Text style={{fontFamily:'font4', fontSize:20/this.state.sizeScreen+3, color:'white'}}>Comprar Brotex</Text>
                         </TouchableOpacity>
                     </View>
                 )
@@ -181,9 +198,9 @@ export default class HomeScreen extends Component{
                         />
                     </View>
                     
-                    <TouchableOpacity style={{backgroundColor:'#ff5a5f', padding:20, paddingLeft:30, paddingRight:30,
+                    <TouchableOpacity style={{backgroundColor:'#ff5a5f', padding:20/this.state.sizeScreen+5, paddingLeft:30, paddingRight:30,
                 borderRadius:15, marginTop:15}} onPress={() => {this.sendRequestBrotex()}}>
-                        <Text style={{fontFamily:'font4', fontSize:20, color:'white'}}>Enviar Brotexs</Text>
+                        <Text style={{fontFamily:'font4', fontSize:20/this.state.sizeScreen+3, color:'white'}}>Enviar Brotexs</Text>
                     </TouchableOpacity>
                 </View>
                 </KeyboardAvoidingView>
@@ -193,38 +210,109 @@ export default class HomeScreen extends Component{
     render() {
         
         
-        
         if(this.Blockchain == null){
             return <Text>Cargando</Text>
         }
         return (
             <View style={styles.firstContainer}>
-               
-                <View style={{  flex:0.65, position:'relative', flexDirection:'column'}}>
+               <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={this.state.modalVisible}
+                    onRequestClose={() => {
+                    Alert.alert('Modal has been closed.');
+                    }}>
+                    <View style={{
+                            flex: 1,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            marginTop: 22,
+                    }}>
+                        <View style={{
+                            margin: 20,
+                            backgroundColor: 'black',
+                            flexDirection:'column',
+                            borderRadius: 20,
+                            padding: 35,
+                            alignItems: 'center',
+                            shadowColor: '#000',
+                            shadowOffset: {
+                              width: 0,
+                              height: 2,
+                            },
+                            shadowOpacity: 0.25,
+                            shadowRadius: 3.84,
+                            elevation: 5,
+                        }}>
+
+                            <Text style={{
+                                color:'white',
+                                fontSize:18,
+                                fontFamily:'font3'
+                            }}>
+                                ¿Cuanto dinero queres ingresar?
+                            </Text>
+
+                            <Text style={{
+                                color:'white'
+                            }}>
+                                *Info: Usamos MercadoPago para procesar el pago
+                            </Text>
+                            <TextInput
+                                keyboardType="number-pad"
+                                style={{ height: 45,width:width/2,
+                                color:"gray", paddingLeft:15,
+                                borderRadius:5, borderColor: 'gray',
+                                borderWidth: 0,
+                                marginTop:25,
+                                marginBottom:25,
+                                backgroundColor:'white' }}
+                                onChangeText={text => this.setState({mountToBuyBrotex: text})}
+                                value={this.state.mountToBuyBrotex}
+                                placeholderTextColor="gray" 
+                                placeholder="Cantidad de pesos ARS"
+                                />
+                            <Text style={{
+                                color:'white',
+                                marginBottom:15,
+                                fontFamily:"font4"
+                            }}>
+                                <Text style={{color:"#3483fa"}}>{this.state.mountToBuyBrotex/this.Blockchain.value}</Text> Brotexs
+                            </Text>
+                            <View style={{flexDirection:'column'}}>
+                                <Button title="Comprar Brotex" 
+                                onPress={() => {this.buyBrotex(this.state.mountToBuyBrotex)}} />
+                            </View>
+                         
+                        </View>
+                    </View>
+                </Modal>
+                <View style={{  flex:0.73, position:'relative', flexDirection:'column'}}>
                 
                     <ImageBackground style={{width:width, flex:1, flexDirection:'column' }}
                      source={require("../../assets/bg.png")}>
-                         <View style={{flexDirection:'row'}}>
-                        <View style={{flex:0.33, marginTop:45}}>
+                        <View style={{flexDirection:'row'}}>
+                        <View style={{flex:0.25, marginTop:45}}>
                             <TouchableOpacity style={{marginLeft:15}} onPress={() => {this.CerrarSesion()}}>
-                                <Image source={require('../../assets/sett.png')} style={{height:30, width:30}}/>
+                                <Image source={require('../../assets/sett.png')} style={{height:30/this.state.sizeScreen+10, width:30/this.state.sizeScreen+10}}/>
                             </TouchableOpacity>
                         </View>
                         
-                        <View style={{flex:0.33, marginTop:50}}>
-                            <Text style={{fontSize:34, color:'white', fontFamily:'font4', marginLeft:4}}>Brotex</Text>
+                        <View style={{flex:0.50, marginTop:45, justifyContent:'center', alignItems:'center'}}>
+                            <Text style={{fontSize:34/this.state.sizeScreen+8, color:'white', fontFamily:'font4', textAlign:'center'}}>Brotex</Text>
                         </View>
-                        <View style={{flex:0.33, marginTop:45, alignItems:'flex-end'}}>
+
+                        <View style={{flex:0.25, marginTop:45, alignItems:'flex-end'}}>
                             <TouchableOpacity style={{marginRight:15}}>
-                                <Image source={require('../../assets/account.png')} style={{height:30, width:30}}/>
+                                <Image source={require('../../assets/account.png')} style={{height:30/this.state.sizeScreen+10, width:30/this.state.sizeScreen+10}}/>
                             </TouchableOpacity>
                         </View>
                         </View>
                         <View style={{  marginTop:30, justifyContent:"center", alignItems:'center'}}>
-                            <Text style={{fontFamily:'font2', fontSize:20, color:'white', textAlign:'center'}}>Bienvenido {this.state.name}!</Text>
-                            <Text style={{fontFamily:'font1', fontSize:18, color:'#DFDFDF', textAlign:'center', position:'relative', top:-5}}>Esta es tu billetera</Text>
+                            <Text style={{fontFamily:'font2', fontSize:20/this.state.sizeScreen+7, color:'white', textAlign:'center'}}>Bienvenido {this.state.name}!</Text>
+                            <Text style={{fontFamily:'font1', fontSize:18/this.state.sizeScreen+7, color:'#DFDFDF', textAlign:'center', position:'relative', top:-5}}>Esta es tu billetera</Text>
                         </View>
-                        <View style={{marginLeft:0, marginTop:30}}>
+                        <View style={{marginLeft:0, marginTop:30/this.state.sizeScreen}}>
                            
                             <LinearGradient
                             style={{width:width-40, marginLeft:20,height:170, shadowColor: "#000",
@@ -266,7 +354,7 @@ export default class HomeScreen extends Component{
                                     <View style={{flex:1, flexDirection:"row"}}>
 
                                             <View style={{flex:1, justifyContent:'center', alignItems:'center', borderRightWidth:1,borderColor:"#17171717"}}>
-                                                <TouchableOpacity onPress={() => {this.methodExample()}}>
+                                                <TouchableOpacity onPress={() => {this.openModal()}}>
                                                 <Text style={{fontFamily:'font2', position:'relative', top:3}}>Ingresar Dinero</Text>
                                                 </TouchableOpacity>
                                             </View>
@@ -282,13 +370,15 @@ export default class HomeScreen extends Component{
                      
                         <View style={{position:"absolute", bottom:0,flexDirection:'row', flex:1,elevation:18, backgroundColor:'', width:width}}>
                             <View style={{flex:0.5}}>
-                                <TouchableOpacity style={{flex:1, backgroundColor:"#d6d6d6", paddingLeft:30, paddingRight:30, height:45,
-                            justifyContent:'center',alignItems:'center',borderTopColor:'#0F0F0F',
-                             borderTopWidth:2}}
-                            onPress={() => { this.setState({isHistory:1}); }}>
+                                <TouchableOpacity style={{flex:1, backgroundColor:"#d6d6d6",
+                                paddingLeft:30/this.state.sizeScreen, paddingRight:30/this.state.sizeScreen, height:45/this.state.sizeScreen+10,
+                                justifyContent:'center',alignItems:'center',borderTopColor:'#0F0F0F',
+                                borderTopWidth:2}}
+                                onPress={() => { this.setState({isHistory:1}); }}>
                                     <Text style={{
                                         fontFamily:(this.state.isHistory == 1)?'font2':'font3',
                                         color:(this.state.isHistory == 1)?'black':'#424242', 
+                                        fontSize:13
                                     }}>
                                     Ultimos movimientos
                                     </Text>
@@ -296,14 +386,16 @@ export default class HomeScreen extends Component{
                             </View>
                             <View style={{flex:0.5}}>
                                 <TouchableOpacity style={{flex:1, backgroundColor:"#d6d6d6",
-                                paddingLeft:30, paddingRight:30,height:45,
+                                paddingLeft:30/this.state.sizeScreen, paddingRight:30/this.state.sizeScreen,
+                                height:45/this.state.sizeScreen+10,
                                 justifyContent:'center', alignItems:'center', borderTopColor:'#0F0F0F', 
                                 borderTopWidth:2}} 
                                 onPress={() => { this.setState({isHistory:2})}}>
                                     <Text 
                                     style={{
                                         fontFamily:(this.state.isHistory == 2)?'font2':'font3',
-                                        color:(this.state.isHistory == 2)?'black':'#424242',                                        
+                                        color:(this.state.isHistory == 2)?'black':'#424242',            
+                                        fontSize:13                            
                                     }}>
                                     Enviar dinero
                                     </Text>
@@ -314,7 +406,7 @@ export default class HomeScreen extends Component{
                     </ImageBackground>
                 </View>
 
-                <View style={{  flex:0.35}}>
+                <View style={{  flex:0.27}}>
                     <View style={{width:width, flex:1,
                     alignItems:'center',
                     backgroundColor:'#131313'}}>
